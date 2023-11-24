@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2021 Obeo.
+ * Copyright (c) 2020, 2023 Obeo.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -25,10 +25,12 @@ public interface IQualifiedNameResolverFactory {
 	 *            the {@link IProject}
 	 * @param qualifierSeparator
 	 *            the qualifier name separator
+	 * @param forWorkspace
+	 *            <code>true</code> for workspace use, local project resolution only
 	 * @return the created {@link IQualifiedNameResolver}
 	 */
 	IQualifiedNameResolver createResolver(ClassLoader classLoader, IProject project,
-			String qualifierSeparator);
+			String qualifierSeparator, boolean forWorkspace);
 
 	/**
 	 * Creates a Java {@link ILoader} with the given qualifier name separator.

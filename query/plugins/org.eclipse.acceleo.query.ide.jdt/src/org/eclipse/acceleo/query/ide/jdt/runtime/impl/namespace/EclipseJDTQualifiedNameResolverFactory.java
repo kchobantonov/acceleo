@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2021 Obeo.
+ * Copyright (c) 2020, 2023 Obeo.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.acceleo.query.ide.jdt;
+package org.eclipse.acceleo.query.ide.jdt.runtime.impl.namespace;
 
 import org.eclipse.acceleo.query.ide.runtime.impl.namespace.EclipseQualifiedNameResolver;
 import org.eclipse.acceleo.query.ide.runtime.namespace.IQualifiedNameResolverFactory;
@@ -25,8 +25,8 @@ public class EclipseJDTQualifiedNameResolverFactory implements IQualifiedNameRes
 
 	@Override
 	public IQualifiedNameResolver createResolver(ClassLoader classLoader, IProject project,
-			String qualifierSeparator) {
-		return new EclipseJDTQualifiedNameResolver(classLoader, project, qualifierSeparator);
+			String qualifierSeparator, boolean forWorkspace) {
+		return new EclipseJDTQualifiedNameResolver(classLoader, project, qualifierSeparator, forWorkspace);
 	}
 
 	@Override

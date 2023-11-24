@@ -8,7 +8,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.acceleo.query.ide.jdt;
+package org.eclipse.acceleo.query.ide.jdt.runtime.impl.namespace;
 
 import java.lang.reflect.Method;
 import java.net.URI;

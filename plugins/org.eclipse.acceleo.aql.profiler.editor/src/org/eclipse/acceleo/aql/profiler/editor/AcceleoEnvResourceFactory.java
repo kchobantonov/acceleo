@@ -74,7 +74,7 @@ public class AcceleoEnvResourceFactory extends ResourceFactoryImpl {
 		}
 		final IQualifiedNameResolver resolver = QueryPlugin.getPlugin().createQualifiedNameResolver(
 				AcceleoPlugin.getPlugin().getClass().getClassLoader(), project,
-				AcceleoParser.QUALIFIER_SEPARATOR);
+				AcceleoParser.QUALIFIER_SEPARATOR, false);
 
 		final Map<String, String> options = new LinkedHashMap<>();
 		final ArrayList<Exception> exceptions = new ArrayList<>();

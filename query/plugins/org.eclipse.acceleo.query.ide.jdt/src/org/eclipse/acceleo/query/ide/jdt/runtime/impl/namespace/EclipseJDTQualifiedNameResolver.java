@@ -8,7 +8,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.acceleo.query.ide.jdt;
+package org.eclipse.acceleo.query.ide.jdt.runtime.impl.namespace;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -18,8 +18,10 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.acceleo.query.ide.jdt.Activator;
 import org.eclipse.acceleo.query.ide.runtime.impl.namespace.EclipseQualifiedNameResolver;
 import org.eclipse.acceleo.query.runtime.impl.namespace.ClassLoaderQualifiedNameResolver;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -30,8 +32,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.container.Module;
 
@@ -48,6 +52,11 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 	private final IJavaProject project;
 
 	/**
+	 * For workspace use, local project resolution only.
+	 */
+	private boolean forWorkspace;
+
+	/**
 	 * Constructor.
 	 * 
 	 * @param classLoader
@@ -56,11 +65,14 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 	 *            the {@link IProject}
 	 * @param qualifierSeparator
 	 *            the qualifier name separator
+	 * @param forWorkspace
+	 *            <code>true</code> for workspace use, local project resolution only
 	 */
 	public EclipseJDTQualifiedNameResolver(ClassLoader classLoader, IProject project,
-			String qualifierSeparator) {
-		super(createProjectClassLoader(classLoader, project), qualifierSeparator);
+			String qualifierSeparator, boolean forWorkspace) {
+		super(createProjectClassLoader(classLoader, project, forWorkspace), qualifierSeparator);
 		this.project = JavaCore.create(project);
+		this.forWorkspace = forWorkspace;
 	}
 
 	/**
@@ -70,16 +82,19 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 	 *            the parent {@link ClassLoader}
 	 * @param project
 	 *            the {@link IProject}
+	 * @param forWorspace
+	 *            <code>true</code> for workspace use, local project resolution only
 	 * @return the class loader for the given {@link IProject}
 	 */
-	protected static ClassLoader createProjectClassLoader(ClassLoader classLoader, IProject project) {
+	protected static ClassLoader createProjectClassLoader(ClassLoader classLoader, IProject project,
+			boolean forWorspace) {
 		ClassLoader res;
 
 		if (project.exists() && project.isOpen()) {
 			final IJavaProject javaProject = JavaCore.create(project);
 			if (javaProject != null) {
 				try {
-					final String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+					final String[] classPathEntries = getClassPathes(javaProject, forWorspace);
 					final List<URL> urlList = new ArrayList<URL>();
 					for (String entry : classPathEntries) {
 						final IPath path = new Path(entry);
@@ -105,6 +120,52 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 		}
 
 		return res;
+	}
+
+	// copied from JavaRuntime.computeDefaultRuntimeClassPath()
+	private static String[] getClassPathes(IJavaProject javaProject, boolean forWorkspace)
+			throws CoreException {
+		IRuntimeClasspathEntry[] unresolved = JavaRuntime.computeUnresolvedRuntimeClasspath(javaProject);
+
+		// 1. remove bootpath entries
+		// 2. resolve & translate to local file system paths
+		List<String> resolved = new ArrayList<>(unresolved.length);
+		for (int i = 0; i < unresolved.length; i++) {
+			IRuntimeClasspathEntry entry = unresolved[i];
+			if (entry.getClasspathProperty() == IRuntimeClasspathEntry.USER_CLASSES) {
+				IRuntimeClasspathEntry[] entries = JavaRuntime.resolveRuntimeClasspathEntry(entry,
+						javaProject);
+				for (int j = 0; j < entries.length; j++) {
+					if (keepEntry(javaProject, forWorkspace, entries[j])) {
+						String location = entries[j].getLocation();
+						if (location != null) {
+							resolved.add(location);
+						}
+					}
+				}
+			}
+		}
+
+		return resolved.toArray(new String[resolved.size()]);
+
+	}
+
+	/**
+	 * Tells if we should keep the given {@link IRuntimeClasspathEntry}.
+	 * 
+	 * @param javaProject
+	 *            the current {@link IJavaProject}
+	 * @param forWorspace
+	 *            <code>true</code> for workspace use, local project resolution only
+	 * @param entry
+	 *            the {@link IRuntimeClasspathEntry}
+	 * @return <code>true</code> if we should keep the given {@link IRuntimeClasspathEntry},
+	 *         <code>false</code> otherwise
+	 */
+	private static boolean keepEntry(IJavaProject javaProject, boolean forWorkspace,
+			IRuntimeClasspathEntry entry) {
+		return !forWorkspace || entry.getType() != IRuntimeClasspathEntry.PROJECT || javaProject
+				.getProject() == entry.getResource();
 	}
 
 	@Override
@@ -144,6 +205,7 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 	 */
 	private URI getSourceURI(IJavaProject javaProject, String qualifiedName) throws JavaModelException {
 		URI res = null;
+
 		found: for (IClasspathEntry entry : javaProject.getResolvedClasspath(true)) {
 			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
 				final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
@@ -158,7 +220,7 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 						break found;
 					}
 				}
-			} else if (entry.getEntryKind() == IClasspathEntry.CPE_PROJECT) {
+			} else if (!forWorkspace && entry.getEntryKind() == IClasspathEntry.CPE_PROJECT) {
 				final IProject childProject = ResourcesPlugin.getWorkspace().getRoot().getProject(entry
 						.getPath().lastSegment());
 				if (childProject != null) {
@@ -166,6 +228,57 @@ public class EclipseJDTQualifiedNameResolver extends ClassLoaderQualifiedNameRes
 					res = getSourceURI(childJavaProject, qualifiedName);
 				}
 			}
+		}
+
+		return res;
+	}
+
+	@Override
+	public URI getBinaryURI(URI sourceURI) {
+		URI res;
+
+		if (project != null) {
+			try {
+				final URI foundURI = getBinaryURI(project, sourceURI);
+				if (foundURI != null) {
+					res = foundURI;
+				} else {
+					res = super.getBinaryURI(sourceURI);
+				}
+			} catch (JavaModelException e) {
+				res = super.getBinaryURI(sourceURI);
+			}
+		} else {
+			res = super.getBinaryURI(sourceURI);
+		}
+
+		return res;
+	}
+
+	private URI getBinaryURI(IJavaProject javaProject, URI sourceURI) throws JavaModelException {
+		final URI res;
+
+		final IWorkspaceRoot workspaceRoot = javaProject.getProject().getWorkspace().getRoot();
+		final IFile sourceFile = workspaceRoot.getFileForLocation(new Path(sourceURI.getPath()));
+		final IClasspathEntry entry = javaProject.findContainingClasspathEntry(sourceFile);
+		if (entry != null) {
+			if (entry.getContentKind() == IPackageFragmentRoot.K_BINARY) {
+				res = sourceURI;
+			} else if (entry.getContentKind() == IPackageFragmentRoot.K_SOURCE) {
+				// TODO check forWorkspace and the project to the class path entry
+				final IPath relativePath = sourceFile.getFullPath().makeRelativeTo(entry.getPath());
+				final IPath binaryPath = javaProject.getOutputLocation().append(relativePath);
+				final IFile binaryFile = workspaceRoot.getFile(binaryPath);
+				if (binaryFile.exists()) {
+					res = binaryFile.getLocationURI();
+				} else {
+					res = null;
+				}
+			} else {
+				throw new IllegalStateException("unknown classpath entry content kind.");
+			}
+		} else {
+			res = null;
 		}
 
 		return res;

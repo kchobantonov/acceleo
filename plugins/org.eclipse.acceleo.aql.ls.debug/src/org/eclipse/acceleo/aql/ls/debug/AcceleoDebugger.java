@@ -263,7 +263,7 @@ public class AcceleoDebugger extends AbstractDSLDebugger {
 		final IProject project = LSPEclipseUtils.findResourceFor((String)arguments.get(MODULE)).getProject();
 		final IQualifiedNameResolver resolver = QueryPlugin.getPlugin().createQualifiedNameResolver(
 				AcceleoPlugin.getPlugin().getClass().getClassLoader(), project,
-				AcceleoParser.QUALIFIER_SEPARATOR);
+				AcceleoParser.QUALIFIER_SEPARATOR, false);
 
 		// TODO get options form the launch configuration
 		final Map<String, String> options = new LinkedHashMap<>();
@@ -280,8 +280,8 @@ public class AcceleoDebugger extends AbstractDSLDebugger {
 		resolver.addLoader(new ModuleLoader(new AcceleoParser(), evaluator));
 		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR));
 
-		final String moduleQualifiedName = resolver.getQualifiedName(java.net.URI.create(moduleURI
-				.toString()));
+		final java.net.URI moduleBinaryURI = resolver.getBinaryURI(java.net.URI.create(moduleURI.toString()));
+		final String moduleQualifiedName = resolver.getQualifiedName(moduleBinaryURI);
 		final Object resolved = resolver.resolve(moduleQualifiedName);
 		if (resolved instanceof Module) {
 			astResult = ((Module)resolved).getAst();
