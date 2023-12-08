@@ -52,17 +52,6 @@ public class JavaMethodService extends AbstractService<Method> {
 	private final Object instance;
 
 	/**
-	 * Known {@link IReadOnlyQueryEnvironment} to invalidate {@link JavaMethodService#returnTypes cached
-	 * return types}.
-	 */
-	private IReadOnlyQueryEnvironment knwonEnvironment;
-
-	/**
-	 * Return {@link IType} cache.
-	 */
-	private Set<IType> returnTypes;
-
-	/**
 	 * Creates a new service instance given a method and an instance.
 	 * 
 	 * @param method
@@ -75,30 +64,20 @@ public class JavaMethodService extends AbstractService<Method> {
 		this.instance = serviceInstance;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.IService#getName()
-	 */
 	@Override
 	public String getName() {
 		return getOrigin().getName();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.IService#getParameterTypes(org.eclipse.acceleo.query.runtime.IReadOnlyQueryEnvironment)
-	 */
 	@Override
-	public List<IType> getParameterTypes(IReadOnlyQueryEnvironment queryEnvironment) {
-		final List<IType> result = new ArrayList<IType>();
+	public List<IType> computeParameterTypes(IReadOnlyQueryEnvironment queryEnvironment) {
+		final List<IType> res = new ArrayList<IType>();
 
 		for (Class<?> cls : getOrigin().getParameterTypes()) {
-			result.add(getClassType(queryEnvironment, cls));
+			res.add(getClassType(queryEnvironment, cls));
 		}
 
-		return result;
+		return res;
 	}
 
 	/**
@@ -136,46 +115,29 @@ public class JavaMethodService extends AbstractService<Method> {
 		return result;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.IService#getNumberOfParameters()
-	 */
 	@Override
 	public int getNumberOfParameters() {
 		return getOrigin().getParameterTypes().length;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.impl.AbstractService#internalInvoke(java.lang.Object[])
-	 */
 	@Override
 	protected Object internalInvoke(Object[] arguments) throws Exception {
 		return getOrigin().invoke(instance, arguments);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.IService#getPriority()
-	 */
 	@Override
 	public int getPriority() {
 		return PRIORITY;
 	}
 
 	@Override
-	public Set<IType> getType(IReadOnlyQueryEnvironment queryEnvironment) {
-		if (knwonEnvironment != queryEnvironment || returnTypes == null) {
-			knwonEnvironment = queryEnvironment;
-			returnTypes = new LinkedHashSet<IType>();
-			Type returnType = getOrigin().getGenericReturnType();
-			returnTypes.addAll(getIType(queryEnvironment, returnType));
-		}
+	public Set<IType> computeType(IReadOnlyQueryEnvironment queryEnvironment) {
+		final Set<IType> res = new LinkedHashSet<IType>();
 
-		return returnTypes;
+		Type returnType = getOrigin().getGenericReturnType();
+		res.addAll(getIType(queryEnvironment, returnType));
+
+		return res;
 	}
 
 	/**
@@ -240,12 +202,6 @@ public class JavaMethodService extends AbstractService<Method> {
 		return result;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.impl.AbstractService#matches(org.eclipse.acceleo.query.runtime.IReadOnlyQueryEnvironment,
-	 *      org.eclipse.acceleo.query.validation.type.IType[])
-	 */
 	@Override
 	public boolean matches(IReadOnlyQueryEnvironment queryEnvironment, IType[] argumentTypes) {
 		final ClassType[] classTypes = new ClassType[argumentTypes.length];
@@ -299,41 +255,21 @@ public class JavaMethodService extends AbstractService<Method> {
 		return instance;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.IService#getShortSignature()
-	 */
 	@Override
 	public String getShortSignature() {
 		return serviceShortSignature(getOrigin().getParameterTypes());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see org.eclipse.acceleo.query.runtime.IService#getLongSignature()
-	 */
 	@Override
 	public String getLongSignature() {
 		return getOrigin().toString();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof JavaMethodService && ((JavaMethodService)obj).getOrigin().equals(getOrigin());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see java.lang.Object#hashCode()
-	 */
 	@Override
 	public int hashCode() {
 		return getOrigin().hashCode();

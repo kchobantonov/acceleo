@@ -49,7 +49,6 @@ public abstract class QueryWorkspace<P> implements IQueryWorkspace<P> {
 
 	@Override
 	public void addProject(P project) {
-		System.out.println("Workspace Add project " + project);
 		final IQueryWorkspaceQualifiedNameResolver resolver = createResolver(project);
 		projectToResolver.put(project, resolver);
 		resolverToProject.put(resolver, project);
