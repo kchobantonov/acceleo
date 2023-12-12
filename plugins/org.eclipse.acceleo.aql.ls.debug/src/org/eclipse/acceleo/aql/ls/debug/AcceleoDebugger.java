@@ -85,7 +85,7 @@ public class AcceleoDebugger extends AbstractDSLDebugger {
 					resolver.clearLoaders();
 					resolver.addLoader(new ModuleLoader(new AcceleoParser(), evaluator));
 					resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(
-							AcceleoParser.QUALIFIER_SEPARATOR));
+							AcceleoParser.QUALIFIER_SEPARATOR, false));
 
 					final IAcceleoGenerationStrategy strategy = new DefaultGenerationStrategy(model
 							.getResourceSet().getURIConverter());
@@ -278,7 +278,8 @@ public class AcceleoDebugger extends AbstractDSLDebugger {
 			registerEPackage(queryEnvironment, EPackage.Registry.INSTANCE.getEPackage(nsURI));
 		}
 		resolver.addLoader(new ModuleLoader(new AcceleoParser(), evaluator));
-		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR));
+		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR,
+				false));
 
 		final java.net.URI moduleBinaryURI = resolver.getBinaryURI(java.net.URI.create(moduleURI.toString()));
 		final String moduleQualifiedName = resolver.getQualifiedName(moduleBinaryURI);
@@ -334,7 +335,8 @@ public class AcceleoDebugger extends AbstractDSLDebugger {
 		final IQualifiedNameResolver resolver = environment.getLookupEngine().getResolver();
 		resolver.clearLoaders();
 		resolver.addLoader(new ModuleLoader(new AcceleoParser(), noDebugEvaluator));
-		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR));
+		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR,
+				false));
 
 		final IAcceleoGenerationStrategy strategy = new DefaultGenerationStrategy(modelResource
 				.getResourceSet().getURIConverter());

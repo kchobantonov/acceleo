@@ -141,7 +141,7 @@ public class EclipseAcceleoLanguageServerContext implements AcceleoLanguageServe
 				AcceleoPlugin.getPlugin().getClass().getClassLoader(), eclipseProject,
 				AcceleoParser.QUALIFIER_SEPARATOR, true);
 		resolver.addLoader(new ModuleLoader(new AcceleoParser(), null));
-		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR));
+		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR, true));
 
 		return QueryPlugin.getPlugin().createWorkspaceQualifiedNameResolver(eclipseProject, resolver,
 				synchronizer);

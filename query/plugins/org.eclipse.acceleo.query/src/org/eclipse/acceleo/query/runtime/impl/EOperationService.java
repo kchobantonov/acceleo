@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.acceleo.query.parser.CombineIterator;
-import org.eclipse.acceleo.query.runtime.AcceleoQueryValidationException;
 import org.eclipse.acceleo.query.runtime.ICompletionProposal;
 import org.eclipse.acceleo.query.runtime.IReadOnlyQueryEnvironment;
 import org.eclipse.acceleo.query.runtime.impl.completion.EOperationServiceCompletionProposal;
@@ -274,17 +273,25 @@ public class EOperationService extends AbstractService<EOperation> {
 					}
 				}
 			} else {
-				throw new AcceleoQueryValidationException(iType.getClass().getCanonicalName());
+				eClassifiers = null;
 			}
-			final Set<IType> types = new LinkedHashSet<IType>();
-			for (EClassifier eClassifier : eClassifiers) {
-				if (eClassifier != null) {
-					types.add(new EClassifierType(queryEnvironment, eClassifier));
-				} else {
-					types.add(new ClassType(queryEnvironment, null));
+
+			if (eClassifiers != null) {
+				final Set<IType> types = new LinkedHashSet<IType>();
+				for (EClassifier eClassifier : eClassifiers) {
+					if (eClassifier != null) {
+						types.add(new EClassifierType(queryEnvironment, eClassifier));
+					} else {
+						types.add(new ClassType(queryEnvironment, null));
+					}
 				}
+				eClassifierTypes.add(types);
+			} else {
+				final Set<IType> types = new LinkedHashSet<IType>();
+				types.add(iType);
+				eClassifierTypes.add(types);
 			}
-			eClassifierTypes.add(types);
+
 		}
 
 		if (canMatch) {

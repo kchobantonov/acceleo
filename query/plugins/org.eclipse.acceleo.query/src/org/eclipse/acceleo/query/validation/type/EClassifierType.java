@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Obeo.
+ * Copyright (c) 2015, 2023 Obeo.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -75,6 +75,13 @@ public class EClassifierType extends AbstractType {
 								otherType.getType());
 			} else if (otherType.getType() instanceof Class<?>) {
 				result = emfIsAssignableFrom(otherType);
+			} else {
+				result = javaIsAssignableFrom(otherType);
+			}
+		} else if (otherType instanceof ISymbolicType) {
+			final Class<?> ourClass = queryEnvironment.getEPackageProvider().getClass(getType());
+			if (ourClass != null) {
+				result = ((ISymbolicType)otherType).isCompatibleSymbol(ourClass.getCanonicalName());
 			} else {
 				result = javaIsAssignableFrom(otherType);
 			}

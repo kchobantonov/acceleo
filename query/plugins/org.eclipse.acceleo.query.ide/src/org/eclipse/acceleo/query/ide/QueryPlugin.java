@@ -217,9 +217,11 @@ public class QueryPlugin extends EMFPlugin {
 		 * 
 		 * @param qualifierSeparator
 		 *            the qualifier name separator
+		 * @param forWorkspace
+		 *            <code>true</code> for workspace use, validation resolution only
 		 * @return the created Java {@link ILoader}
 		 */
-		public ILoader createJavaLoader(String qualifierSeparator) {
+		public ILoader createJavaLoader(String qualifierSeparator, boolean forWorkspace) {
 			final ILoader res;
 
 			final List<IResolverFactoryDescriptor> factoryDescriptors;
@@ -230,7 +232,8 @@ public class QueryPlugin extends EMFPlugin {
 			if (factoryDescriptors.isEmpty()) {
 				res = new JavaLoader(qualifierSeparator);
 			} else {
-				res = factoryDescriptors.get(0).getFactory().createJavaLoader(qualifierSeparator);
+				res = factoryDescriptors.get(0).getFactory().createJavaLoader(qualifierSeparator,
+						forWorkspace);
 			}
 
 			return res;

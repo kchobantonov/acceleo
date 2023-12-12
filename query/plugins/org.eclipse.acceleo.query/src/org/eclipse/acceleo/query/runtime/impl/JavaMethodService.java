@@ -18,7 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.acceleo.query.runtime.AcceleoQueryValidationException;
 import org.eclipse.acceleo.query.runtime.ICompletionProposal;
 import org.eclipse.acceleo.query.runtime.IReadOnlyQueryEnvironment;
 import org.eclipse.acceleo.query.runtime.impl.completion.JavaMethodServiceCompletionProposal;
@@ -204,7 +203,7 @@ public class JavaMethodService extends AbstractService<Method> {
 
 	@Override
 	public boolean matches(IReadOnlyQueryEnvironment queryEnvironment, IType[] argumentTypes) {
-		final ClassType[] classTypes = new ClassType[argumentTypes.length];
+		final IType[] classTypes = new IType[argumentTypes.length];
 
 		for (int i = 0; i < argumentTypes.length; ++i) {
 			Class<?> cls;
@@ -227,7 +226,7 @@ public class JavaMethodService extends AbstractService<Method> {
 			} else if (iType instanceof IJavaType) {
 				cls = ((IJavaType)iType).getType();
 			} else {
-				throw new AcceleoQueryValidationException(iType.getClass().getCanonicalName());
+				cls = null;
 			}
 
 			if (cls != null) {
@@ -238,9 +237,11 @@ public class JavaMethodService extends AbstractService<Method> {
 				} else if ("double".equals(cls.getName())) {
 					cls = Double.class;
 				}
+				classTypes[i] = new ClassType(queryEnvironment, cls);
+			} else {
+				classTypes[i] = iType;
 			}
 
-			classTypes[i] = new ClassType(queryEnvironment, cls);
 		}
 
 		return super.matches(queryEnvironment, classTypes);

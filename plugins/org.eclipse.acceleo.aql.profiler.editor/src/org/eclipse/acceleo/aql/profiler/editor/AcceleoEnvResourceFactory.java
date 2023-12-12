@@ -86,7 +86,8 @@ public class AcceleoEnvResourceFactory extends ResourceFactoryImpl {
 
 		final AcceleoEvaluator evaluator = new AcceleoEvaluator(queryEnvironment.getLookupEngine());
 		resolver.addLoader(new ModuleLoader(new AcceleoParser(), evaluator));
-		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR));
+		resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR,
+				false));
 	}
 
 	/**

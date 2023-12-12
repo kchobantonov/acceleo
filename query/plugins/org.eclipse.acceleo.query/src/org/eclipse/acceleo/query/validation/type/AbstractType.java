@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2020 Obeo.
+ * Copyright (c) 2015, 2023 Obeo.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
@@ -20,8 +20,9 @@ import java.util.Map;
  * @author <a href="mailto:romain.guider@obeo.fr">Romain Guider</a>
  */
 public abstract class AbstractType implements IType {
+
 	/** Associates primitive java classes to their wrapper. */
-	private static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS;
+	protected static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS;
 
 	static {
 		final Map<Class<?>, Class<?>> map = new HashMap<Class<?>, Class<?>>();

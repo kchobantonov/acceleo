@@ -230,7 +230,8 @@ public class AcceleoLauncher implements IApplication {
 			AcceleoEvaluator evaluator = new AcceleoEvaluator(queryEnvironment.getLookupEngine());
 
 			resolver.addLoader(new ModuleLoader(new AcceleoParser(), evaluator));
-			resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR));
+			resolver.addLoader(QueryPlugin.getPlugin().createJavaLoader(AcceleoParser.QUALIFIER_SEPARATOR,
+					false));
 
 			final Object resolved = resolver.resolve(moduleQualifiedName);
 			final Module mainModule;

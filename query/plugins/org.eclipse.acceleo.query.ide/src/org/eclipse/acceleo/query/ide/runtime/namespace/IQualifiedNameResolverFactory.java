@@ -37,8 +37,10 @@ public interface IQualifiedNameResolverFactory {
 	 * 
 	 * @param qualifierSeparator
 	 *            the qualifier name separator
+	 * @param forWorkspace
+	 *            <code>true</code> for workspace use, validation resolution only
 	 * @return the created Java {@link ILoader}
 	 */
-	ILoader createJavaLoader(String qualifierSeparator);
+	ILoader createJavaLoader(String qualifierSeparator, boolean forWorkspace);
 
 }

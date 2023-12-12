@@ -30,8 +30,8 @@ public class EclipseJDTQualifiedNameResolverFactory implements IQualifiedNameRes
 	}
 
 	@Override
-	public ILoader createJavaLoader(String qualifierSeparator) {
-		return new EclipseJDTJavaLoader(qualifierSeparator);
+	public ILoader createJavaLoader(String qualifierSeparator, boolean forWorkspace) {
+		return new EclipseJDTJavaLoader(qualifierSeparator, forWorkspace);
 	}
 
 }

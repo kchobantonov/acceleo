@@ -24,7 +24,7 @@ public abstract class AbstractJavaType extends AbstractType implements IJavaType
 	/**
 	 * The {@link IReadOnlyQueryEnvironment}.
 	 */
-	private IReadOnlyQueryEnvironment queryEnvironment;
+	private final IReadOnlyQueryEnvironment queryEnvironment;
 
 	/**
 	 * Constructor.
@@ -58,6 +58,8 @@ public abstract class AbstractJavaType extends AbstractType implements IJavaType
 				result = getType() == EObject.class && ((EClassifierType)otherType)
 						.getType() instanceof EClass;
 			}
+		} else if (otherType instanceof ISymbolicType) {
+			result = ((ISymbolicType)otherType).isCompatibleSymbol(getType().getCanonicalName());
 		} else {
 			result = false;
 		}
