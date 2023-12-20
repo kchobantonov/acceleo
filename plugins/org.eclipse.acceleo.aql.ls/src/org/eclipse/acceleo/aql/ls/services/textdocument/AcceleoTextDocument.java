@@ -280,9 +280,9 @@ public class AcceleoTextDocument {
 	 * Validates this document and publishes the validation results.
 	 */
 	public void validateAndPublishResults() {
+		this.validateContents();
 		final AcceleoTextDocumentService service = this.getTextDocumentService();
 		if (service != null) {
-			this.validateContents();
 			service.publishValidationResults(this);
 		}
 	}
