@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'migration'
+		label 'centos-latest'
 	}
 	
 	options {
@@ -32,7 +32,7 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh "mvn clean verify -P$PLATFORM -Psign"
+					sh "mvn clean verify -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false"
 				}
 				sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
 					sh '''
@@ -53,7 +53,7 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh "mvn clean verify deploy:deploy -P$PLATFORM -Psign"
+					sh "mvn clean verify deploy:deploy -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false"
 				}
 				sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
 					sh '''
