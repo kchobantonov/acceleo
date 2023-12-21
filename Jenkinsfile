@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'basic-ubuntu-latest'
+		label 'ubuntu-gtk3-metacity'
 	}
 	
 	options {
