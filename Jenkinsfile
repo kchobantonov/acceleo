@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'ubuntu-gtk3-metacity'
+		label 'migration'
 	}
 	
 	options {
