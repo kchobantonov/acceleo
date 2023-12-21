@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'centos-latest'
+		label 'basic-ubuntu-latest'
 	}
 	
 	options {
@@ -69,7 +69,7 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh "mvn clean verify -P$PLATFORM"
+					sh "mvn clean verify -P$PLATFORM -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false"
 				}
 			}
 		}
