@@ -37,7 +37,6 @@ pipeline {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 					sh '''
 						xsetroot -solid grey
-						vncconfig -iconic &
 						xhost +
 						sleep 2
 						metacity --replace --sm-disable --display=${DISPLAY} &
@@ -69,7 +68,6 @@ pipeline {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 					sh '''
 						xsetroot -solid grey
-						vncconfig -iconic &
 						xhost +
 						sleep 2
 						metacity --replace --sm-disable --display=${DISPLAY} &
@@ -96,7 +94,6 @@ pipeline {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 					sh '''
 						xsetroot -solid grey
-						vncconfig -iconic &
 						xhost +
 						sleep 2
 						metacity --replace --sm-disable --display=${DISPLAY} &
