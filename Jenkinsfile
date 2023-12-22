@@ -33,6 +33,7 @@ pipeline {
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 					sh '''
+						xrand
 						xrandr -s 1440x900
 						xsetroot -solid grey
 						vncconfig -iconic &
@@ -63,6 +64,7 @@ pipeline {
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 					sh '''
+						xrand
 						xrandr -s 1440x900
 						xsetroot -solid grey
 						vncconfig -iconic &
@@ -88,6 +90,7 @@ pipeline {
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
 					sh '''
+						xrand
 						xrandr -s 1440x900
 						xsetroot -solid grey
 						vncconfig -iconic &
