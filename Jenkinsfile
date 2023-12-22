@@ -32,7 +32,16 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh "mvn clean verify -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false"
+					sh '''
+						xrandr -s 1440x900
+						xsetroot -solid grey
+						vncconfig -iconic &
+						xhost +
+						sleep 2
+						metacity --replace --sm-disable --display=${DISPLAY} &
+						sleep 2
+						mvn clean verify -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false
+					'''
 				}
 				sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
 					sh '''
@@ -53,7 +62,16 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh "mvn clean verify deploy:deploy -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false"
+					sh '''
+						xrandr -s 1440x900
+						xsetroot -solid grey
+						vncconfig -iconic &
+						xhost +
+						sleep 2
+						metacity --replace --sm-disable --display=${DISPLAY} &
+						sleep 2
+						mvn clean verify deploy:deploy -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false
+					'''
 				}
 				sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
 					sh '''
@@ -69,7 +87,16 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh "mvn clean verify -P$PLATFORM -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false"
+					sh '''
+						xrandr -s 1440x900
+						xsetroot -solid grey
+						vncconfig -iconic &
+						xhost +
+						sleep 2
+						metacity --replace --sm-disable --display=${DISPLAY} &
+						sleep 2
+						mvn clean verify -P$PLATFORM -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false
+					'''
 				}
 			}
 		}
