@@ -139,7 +139,7 @@
 
     <module>tests/org.eclipse.acceleo.aql.rcpttproduct</module>
     <module>query/tests/org.eclipse.acceleo.query.ide.ui.tests.rcptt</module>
-    <!--module>tests/org.eclipse.acceleo.aql.rcptt</module-->
+    <module>tests/org.eclipse.acceleo.aql.rcptt</module>
 
     <module>releng/org.eclipse.acceleo.aql.update</module>
   </modules>
