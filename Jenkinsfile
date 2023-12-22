@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'migration'
+		label 'centos-latest'
 	}
 	
 	options {
