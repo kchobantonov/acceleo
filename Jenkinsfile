@@ -20,6 +20,9 @@ pipeline {
 	
 	stages {
 		stage ('Nightly') {
+			agent {
+				label 'migration'
+			}
 			when {
 				allOf {
 					not {
@@ -53,6 +56,9 @@ pipeline {
 			}
 		}
 		stage ('Tag') {
+			agent {
+				label 'migration'
+			}
 			when {
 				allOf {
 					not {
@@ -84,6 +90,9 @@ pipeline {
 			}
 		}
 		stage ('PR Verify') {
+			agent {
+				label 'migration'
+			}
 			when {
 				branch 'PR-*'
 			}
