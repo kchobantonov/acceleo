@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		label 'centos-latest'
+		label 'migration'
 	}
 	
 	options {
@@ -20,9 +20,6 @@ pipeline {
 	
 	stages {
 		stage ('Nightly') {
-			agent {
-				label 'migration'
-			}
 			when {
 				allOf {
 					not {
@@ -35,14 +32,7 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh '''
-						xsetroot -solid grey
-						xhost +
-						sleep 2
-						metacity --replace --sm-disable --display=${DISPLAY} &
-						sleep 2
-						mvn clean verify -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false
-					'''
+					sh "mvn clean verify -P$PLATFORM -Psign"
 				}
 				sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
 					sh '''
@@ -53,9 +43,6 @@ pipeline {
 			}
 		}
 		stage ('Tag') {
-			agent {
-				label 'migration'
-			}
 			when {
 				allOf {
 					not {
@@ -66,14 +53,7 @@ pipeline {
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh '''
-						xsetroot -solid grey
-						xhost +
-						sleep 2
-						metacity --replace --sm-disable --display=${DISPLAY} &
-						sleep 2
-						mvn clean verify deploy:deploy -P$PLATFORM -Psign -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false
-					'''
+					sh "mvn clean verify deploy:deploy -P$PLATFORM -Psign"
 				}
 				sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
 					sh '''
@@ -84,22 +64,12 @@ pipeline {
 			}
 		}
 		stage ('PR Verify') {
-			agent {
-				label 'migration'
-			}
 			when {
 				branch 'PR-*'
 			}
 			steps {
 				wrap([$class: 'Xvnc', takeScreenshot: false, useXauthority: true]) {
-					sh '''
-						xsetroot -solid grey
-						xhost +
-						sleep 2
-						metacity --replace --sm-disable --display=${DISPLAY} &
-						sleep 2
-						mvn clean verify -P$PLATFORM -Dmaven.wagon.provider.http=httpclient -Dmaven.artifact.threads=12 -Dhttp.tcp.nodelay=false
-					'''
+					sh "mvn clean verify -P$PLATFORM"
 				}
 			}
 		}
